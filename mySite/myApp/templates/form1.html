@@ -1,52 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Fisherman Information</title>
+    <title>Fishermen Form</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-8 rounded shadow-md w-96">
-        <h2 class="text-2xl font-bold mb-6">Fisherman Information</h2>
-        <form method="post">
+        <h2 class="text-2xl font-bold mb-6">Fishermen Selection Form</h2>
+        <form action="/submit" method="post">
             <div class="mb-4">
-                <label class="block text-gray-700">Name:</label>
-                <p class="mt-1 text-lg text-gray-900" id="fisherman-name">{{ fisherman.name }}</p>
+                <label for="fishermen" class="block text-gray-700">Select a fisherman:</label>
+                <select id="fishermen" name="fishermen" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="fisherman1">Fisherman1</option>
+                    <option value="fisherman2">Fisherman2</option>
+                    <option value="fisherman3">Fisherman3</option>
+                    <option value="fisherman4">Fisherman4</option>
+                    <option value="fisherman5">Fisherman5</option>
+                </select>
             </div>
+
             <div class="mb-4">
-                <label class="block text-gray-700">Advance:</label>
-                <div class="flex">
-                    <input type="number" id="fisherman-advance" value="{{ fisherman.advance }}" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <button type="button" onclick="setAdvanceZero()" class="ml-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Set Zero</button>
-                </div>
+                <label for="fish" class="block text-gray-700">Select a fish:</label>
+                <select id="fish" name="fish" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="fish1">Fish1</option>
+                    <option value="fish2">Fish2</option>
+                    <option value="fish3">Fish3</option>
+                    <option value="fish4">Fish4</option>
+                </select>
             </div>
-            <div class="mb-4">
-                <label class="block text-gray-700">Total Income this Week:</label>
-                <div class="flex">
-                    <input type="number" id="fisherman-income" value="{{ fisherman.total_income }}" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <button type="button" onclick="setIncomeZero()" class="ml-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Set Zero</button>
-                </div>
+
+            <div class="mb-6">
+                <label for="quantity" class="block text-gray-700">Fish Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="0" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
             </div>
-            <div class="flex justify-end mt-6">
-                <button type="button" onclick="saveChanges()" class="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Save Changes</button>
+
+            <div class="flex justify-end">
+                <input type="submit" value="Submit" class="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             </div>
         </form>
     </div>
-
-    <script>
-        function saveChanges() {
-            const advance = document.getElementById('fisherman-advance').value;
-            const income = document.getElementById('fisherman-income').value;
-            // Add your code here to save the changes, e.g., make an API call to update the backend
-            alert('Changes saved! Advance: ' + advance + ', Income: ' + income);
-        }
-
-        function setAdvanceZero() {
-            document.getElementById('fisherman-advance').value = 0;
-        }
-
-        function setIncomeZero() {
-            document.getElementById('fisherman-income').value = 0;
-        }
-    </script>
 </body>
 </html>
