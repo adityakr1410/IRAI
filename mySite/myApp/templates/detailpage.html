@@ -8,26 +8,27 @@
     <div class="bg-white p-8 rounded shadow-md w-96">
         <h2 class="text-2xl font-bold mb-6">Fisherman Information</h2>
         <form method="post">
+            {% csrf_token %}
             <div class="mb-4">
                 <label class="block text-gray-700">Name:</label>
-                <p class="mt-1 text-lg text-gray-900" id="fisherman-name">{{ fisherman.name }}</p>
+                <p class="mt-1 text-lg text-gray-900" id="fisherman-name">{{ fisherman.fName }} {{fisherman.lName}}</p>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700">Advance:</label>
                 <div class="flex">
-                    <input type="number" id="fisherman-advance" value="{{ fisherman.advance }}" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="number" id="advance" name="advance" value="{{ fisherman.advance }}" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     <button type="button" onclick="setAdvanceZero()" class="ml-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Set Zero</button>
                 </div>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700">Total Income this Week:</label>
                 <div class="flex">
-                    <input type="number" id="fisherman-income" value="{{ fisherman.total_income }}" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="number" id="income" name="income" value="{{ fisherman.income }}" class="mt-1 block w-full bg-gray-100 border border-gray-300 rounded py-2 px-3 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                     <button type="button" onclick="setIncomeZero()" class="ml-2 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">Set Zero</button>
                 </div>
             </div>
             <div class="flex justify-end mt-6">
-                <button type="button" onclick="saveChanges()" class="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Save Changes</button>
+                <button type="submit" class="bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Save Changes</button>
             </div>
         </form>
     </div>

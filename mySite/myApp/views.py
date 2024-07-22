@@ -47,3 +47,28 @@ def catches(request):
         }
 
         return render(request,"form1.html",context)
+    
+
+
+def fisherMan(request,id):
+
+    if request.method=='POST':
+        advance = request.POST.get('advance')
+        income = request.POST.get('income')
+        fisherManTemp = FisherMan.objects.get(id=id)
+        fisherManTemp.advance= advance
+        fisherManTemp.income= income
+        
+        print(advance)
+        
+        fisherManTemp.save()
+
+        return HttpResponse("<h1>Changes Done</h1>")
+
+    fisherManTemp = FisherMan.objects.get(id=id)
+    print(fisherManTemp.advance)
+    context={
+        "fisherman":fisherManTemp
+    }
+
+    return render(request,"detailPage.html",context)
