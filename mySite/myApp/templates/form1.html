@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fishermen Form</title>
+</head>
+<body>
+    <h2>Fishermen Selection Form</h2>
+    <form  method="post">
+        {% csrf_token %}
+        <label for="fishermen">Select a fisherman:</label>
+        <select id="fishermen" name="fishermen">
+            {% for fMan in fisherman %}
+
+                <option value="{{fMan.id}}">{{fMan}}</option>
+            
+            {% endfor %}
+
+        </select>
+        <br><br>
+        
+        <label for="fish">Select a fish:</label>
+        <select id="fish" name="fish">
+            {% for fish in fishes %}
+
+                <option value="{{fish.id}}">{{fish}}</option>
+            
+            {% endfor %}
+        </select>
+        <br><br>
+        
+        <label for="quantity">Fish Quantity:</label>
+        <input type="number" id="quantity" name="quantity" min="0">
+        <br><br>
+        
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
