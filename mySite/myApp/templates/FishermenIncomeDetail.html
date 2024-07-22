@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fishermen Financial Information</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-4xl">
+        <h2 class="text-2xl font-bold mb-6 text-center">Fishermen Financial Information</h2>
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b border-gray-300">Fisherman</th>
+                    <th class="py-2 px-4 border-b border-gray-300">Advance</th>
+                    <th class="py-2 px-4 border-b border-gray-300">Income This Week</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-300">Fisherman1</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman1.advance }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman1.income }}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-300">Fisherman2</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman2.advance }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman2.income }}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-300">Fisherman3</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman3.advance }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman3.income }}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-300">Fisherman4</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman4.advance }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman4.income }}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-300">Fisherman5</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman5.advance }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman5.income }}</td>
+                </tr>
+                <tr>
+                    <td class="py-2 px-4 border-b border-gray-300">Fisherman6</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman6.advance }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman6.income }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
