@@ -72,3 +72,10 @@ def fisherMan(request,id):
     }
 
     return render(request,"detailPage.html",context)
+
+def allFisherman(request):
+
+    fishermans = FisherMan.objects.all()
+
+    return render(request,"FishermenIncomeDetail.html",{"fishermans":fishermans})
+

@@ -16,36 +16,17 @@
                 </tr>
             </thead>
             <tbody>
+
+                {% for fisherman in fishermans %}
+
                 <tr>
-                    <td class="py-2 px-4 border-b border-gray-300">Fisherman1</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman1.advance }}</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman1.income }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300">  <a href="{% url "fisherManID" fisherman.id %}"> {{fisherman.fName}} {{fisherman.lName}} </a>  </td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman.advance }}</td>
+                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman.income }}</td>
                 </tr>
-                <tr>
-                    <td class="py-2 px-4 border-b border-gray-300">Fisherman2</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman2.advance }}</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman2.income }}</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-4 border-b border-gray-300">Fisherman3</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman3.advance }}</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman3.income }}</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-4 border-b border-gray-300">Fisherman4</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman4.advance }}</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman4.income }}</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-4 border-b border-gray-300">Fisherman5</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman5.advance }}</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman5.income }}</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-4 border-b border-gray-300">Fisherman6</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-red-500">₹ {{ fisherman6.advance }}</td>
-                    <td class="py-2 px-4 border-b border-gray-300 text-green-500">₹ {{ fisherman6.income }}</td>
-                </tr>
+
+                {% endfor %}
+
             </tbody>
         </table>
     </div>
