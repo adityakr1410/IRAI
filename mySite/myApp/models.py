@@ -24,6 +24,8 @@ class Fish(models.Model):
     name = models.CharField(max_length=10)
     price = models.IntegerField()
 
+    stock = models.IntegerField()
+
 
 class Catch(models.Model):
 
@@ -31,3 +33,16 @@ class Catch(models.Model):
     catcher = models.ForeignKey(FisherMan,on_delete=models.CASCADE)
     fish = models.ForeignKey(Fish,on_delete=models.DO_NOTHING)
     qty = models.IntegerField()
+    price = models.IntegerField()
+
+    paid = models.BooleanField()
+
+
+
+class PaidByManager(models.Model):
+
+    date = models.DateField()
+
+    fisherMan = models.ForeignKey(FisherMan, on_delete=models.DO_NOTHING)
+
+    catchesPaid = models.ManyToManyField(Catch)

@@ -30,6 +30,8 @@ def catches(request):
         catchTemp.save()
 
         fishTemp = Fish.objects.get(id=fish)
+        fishTemp.stock += int(qty)
+        fishTemp.save()
 
         fishermanTemp = FisherMan.objects.get(id=fisherman)
         fishermanTemp.income += fishTemp.price * float(qty)

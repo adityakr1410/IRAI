@@ -6,3 +6,4 @@ from .models import *
 admin.site.register(FisherMan)
 admin.site.register(Fish)
 admin.site.register(Catch)
+admin.site.register(PaidByManager)
