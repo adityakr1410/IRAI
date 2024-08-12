@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Insert Catch{% endblock %}
+
+{% block content %}
+    <h1>Log Catch</h1>
+
+
+    <form method="post" action="{% url 'log_catch' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="fisherman">Select Fisherman:</label>
+            <select name="fisherman" id="fisherman" class="form-control" required>
+                {% for fisherman in fishermen %}
+                    <option value="{{ fisherman.id }}">{{ fisherman.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="fish_weights">Enter Weight for Each Fish:</label>
+            <div id="fish_weights">
+                {% for fish in fish_list %}
+                    <div class="form-group">
+                        <label for="weight_{{ fish.id }}">{{ fish.name }} (Price: {{ fish.price }}):</label>
+                        <input type="number" name="weight_{{ fish.id }}" id="weight_{{ fish.id }}" class="form-control" step="0.01" min="0">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <script>
+        $(document).ready(function() {
+            $('#fisherman').select2({
+                placeholder: 'Select a fisherman',
+                allowClear: true
+            });
+        });
+    </script>
+    
+{% endblock %}

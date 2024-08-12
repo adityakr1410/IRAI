@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Unpaid Catches and Payment{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Unpaid Catches for {{ fisherman.name }}</h1>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Fish</th>
+                    <th>Weight</th>
+                    <th>Price per Kg</th>
+                    <th>Total Price</th>
+                    <th>Catch Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for catch in unpaid_catches %}
+                    <tr>
+                        <td>{{ catch.fish.name }}</td>
+                        <td>{{ catch.weight }} kg</td>
+                        <td>₹{{ catch.fish.price }}</td>
+                        <td>₹{{ catch.price }}</td>
+                        <td>{{ catch.catch_date }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">No unpaid catches.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Available Advances</h2>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Reason</th>
+                    <th>Date Requested</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if advance %}
+                    {% for x in advance %}
+                        <tr>
+                            <td>₹{{ x.amount }}</td>
+                            <td>{{ x.reason }}</td>
+                            <td>{{ x.date_requested }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3">No advances.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <h2>Pay Unpaid Salary</h2>
+        <form method="post" class="form-inline">
+            {% csrf_token %}
+            <div class="form-group mb-2">
+                <label for="payment_amount" class="sr-only">Payment Amount</label>
+                <input type="number" step="0.01" id="payment_amount" name="payment_amount" class="form-control mr-2" 
+                       min="{{ min_payment }}" max="{{ total_unpaid_salary }}" required 
+                       placeholder="Payment Amount" 
+                       title="Amount must be between ₹{{ min_payment }} and ₹{{ total_unpaid_salary }}">
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Submit Payment</button>
+        </form>
+
+        <div class="mt-4">
+            <p>Total Unpaid Salary: <strong>₹{{ total_unpaid_salary }}</strong></p>
+            <p>Minimum Payment: <strong>₹{{ min_payment }}</strong></p>
+        </div>
+    </div>
+{% endblock %}

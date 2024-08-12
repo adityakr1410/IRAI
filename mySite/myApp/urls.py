@@ -5,7 +5,7 @@ from .views import *
 
 urlpatterns = [
     path("",home,name="home"),
-    path("catch/",catches,name="catch"),
-    path("fisherman/<id>/",fisherMan,name="fisherManID"),
-    path("allfisherman/",allFisherman,name="allfisherman"),
+    path("payment_summary/",payment_summary_view,name="payment_summary"),
+    path('fisherman/<int:fisherman_id>/unpaid-catches/', unpaid_catches_view, name='unpaid_catches'),
+    path('log_catch/', log_catch, name='log_catch'),
 ]

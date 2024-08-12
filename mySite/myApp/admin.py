@@ -3,7 +3,20 @@ from .models import *
 # Register your models here.
 
 
-admin.site.register(FisherMan)
+# Registering Fish model
 admin.site.register(Fish)
+
+# Registering Fisherman model
+admin.site.register(Fisherman)
+
+# Registering Catch model
 admin.site.register(Catch)
-admin.site.register(PaidByManager)
+
+# Registering Advance model
+admin.site.register(Advance)
+
+# Registering Payment model
+admin.site.register(Payment)
+
+# Registering PaymentLog model
+admin.site.register(PaymentLog)
