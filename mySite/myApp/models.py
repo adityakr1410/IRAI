@@ -5,9 +5,11 @@ from django.forms import ValidationError
 class Fish(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    royalty_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     def __str__(self):
         return self.name
+
 
 class Fisherman(models.Model):
     name = models.CharField(max_length=255)
@@ -55,13 +57,6 @@ class Fisherman(models.Model):
                 payment_date=timezone.now().date(),
                 amount=total_due,
                 payment_type='Catch'
-            )
-
-            # Create a payment log
-            PaymentLog.objects.create(
-                payment=payment,
-                log_date=timezone.now().date(),
-                log_description=f'Payment of {total_due} for all unpaid catches.'
             )
 
     @staticmethod
@@ -121,11 +116,3 @@ class Payment(models.Model):
     
     def __str__(self):
         return f'Payment of {self.amount} to {self.fisherman.name} for {self.get_payment_type_display()}'
-
-class PaymentLog(models.Model):
-    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    log_date = models.DateField()
-    log_description = models.TextField()
-    
-    def __str__(self):
-        return f'Log for payment ID {self.payment.id} on {self.log_date}'

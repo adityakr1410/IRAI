@@ -17,6 +17,3 @@ admin.site.register(Advance)
 
 # Registering Payment model
 admin.site.register(Payment)
-
-# Registering PaymentLog model
-admin.site.register(PaymentLog)

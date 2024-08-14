@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Give Advance{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Give Advance to {{ fisherman.name }}</h1>
+
+        {% if messages %}
+            <div class="alert alert-{{ messages.tags }} mt-3">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="amount">Amount (₹)</label>
+                <input type="number" step="0.01" id="amount" name="amount" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="reason">Reason</label>
+                <textarea id="reason" name="reason" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="date_requested">Date Requested</label>
+                <input type="date" id="date_requested" name="date_requested" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Advance</button>
+        </form>
+
+        <div class="mt-4">
+            <a href="#" class="btn btn-secondary">Back to Fisherman Details</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const lastDate = new Date();
+            lastDate.setDate(today.getDate() - 7);
+
+            // Format dates in YYYY-MM-DD
+            const formatDate = (date) => date.toISOString().split('T')[0];
+
+            const dateInput = document.getElementById('date_requested');
+            dateInput.value = formatDate(today);
+            dateInput.setAttribute('max', formatDate(today));
+            dateInput.setAttribute('min', formatDate(lastDate));
+        });
+    </script>
+{% endblock %}

@@ -11,6 +11,7 @@
                 <th>Fisherman</th>
                 <th>Total Amount Due</th>
                 <th>View Unpaid Catches</th>
+                <th>Give Advance</th>
             </tr>
         </thead>
         <tbody>
@@ -19,11 +20,12 @@
                     <td>{{ entry.name }}</td>
                     <td>₹{{ entry.total_due }}</td>
                     <td>
-                        {% if entry.total_due > 0 %}
+
                             <a href="{% url 'unpaid_catches' entry.fisherman_id %}" class="btn btn-primary btn-sm">View Unpaid Catches</a>
-                        {% else %}
-                            <span>No Unpaid Catches</span>
-                        {% endif %}
+
+                    </td>
+                    <td>
+                        <a href="{% url 'give_advance' entry.fisherman_id %}" class="btn btn-success btn-sm">Give Advance</a>
                     </td>
                 </tr>
             {% endfor %}

@@ -29,9 +29,7 @@ def unpaid_catches_view(request, fisherman_id):
 
     # Get available advance
     advance = Advance.objects.filter(fisherman=fisherman)
-    total_adv = 0
-    for x in advance:
-        total_adv += x.amount
+    total_adv = sum(x.amount for x in advance)  # Sum up the advance amounts
 
     if request.method == 'POST':
         payment_amount = float(request.POST.get('payment_amount', 0))
@@ -59,13 +57,12 @@ def unpaid_catches_view(request, fisherman_id):
         deduct = float(total_unpaid_salary) - payment_amount
         
         Advance.objects.create(
-            fisherman = fisherman,
-            amount = -deduct,
-            reason = "Deduction",
-            date_requested = timezone.now().date()
+            fisherman=fisherman,
+            amount=-deduct,
+            reason="Deduction",
+            date_requested=timezone.now().date()
         )
         
-
         return redirect('unpaid_catches', fisherman_id=fisherman_id)
     
     context = {
@@ -73,7 +70,8 @@ def unpaid_catches_view(request, fisherman_id):
         'unpaid_catches': unpaid_catches,
         'total_unpaid_salary': total_unpaid_salary,
         'advance': advance,
-        'min_payment':(total_unpaid_salary - total_adv)
+        'total_advance': total_adv,  # Add this line to include total advance
+        'min_payment': total_unpaid_salary - total_adv
     }
     return render(request, 'unpaid_catches.html', context)
 
@@ -103,3 +101,37 @@ def log_catch(request):
         fish_list = Fish.objects.all()
         return render(request, 'catchByFisherman.html', {'fishermen': fishermen, 'fish_list': fish_list})
 
+
+def give_advance_view(request, fisherman_id):
+    fisherman = Fisherman.objects.get(pk=fisherman_id)
+    
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        reason = request.POST.get('reason')
+        date_requested = request.POST.get('date_requested')
+        
+        if not amount or not reason or not date_requested:
+            messages.error(request, 'All fields are required.')
+        else:
+            try:
+                amount = float(amount)
+                # Create and save the advance
+                Advance.objects.create(
+                    fisherman=fisherman,
+                    amount=amount,
+                    reason=reason,
+                    date_requested=date_requested
+                )
+                Payment.objects.create(
+                    fisherman = fisherman,
+                    payment_date = timezone.now().date(),
+                    amount = amount,
+                    payment_type = 'Advance'
+                )
+                messages.success(request, f'Advance of ₹{amount} given to {fisherman.name}.')
+                return redirect('payment_summary')
+            except ValueError:
+                messages.error(request, 'Invalid amount entered.')
+    return render(request, 'give_advance.html', {
+        'fisherman': fisherman
+    })

@@ -8,4 +8,6 @@ urlpatterns = [
     path("payment_summary/",payment_summary_view,name="payment_summary"),
     path('fisherman/<int:fisherman_id>/unpaid-catches/', unpaid_catches_view, name='unpaid_catches'),
     path('log_catch/', log_catch, name='log_catch'),
+    path('fisherman/<int:fisherman_id>/give-advance/', give_advance_view, name='give_advance'),
+
 ]
