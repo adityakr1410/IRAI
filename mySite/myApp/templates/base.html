@@ -14,18 +14,19 @@
 
         /* Main content area takes available space */
         .content-wrapper {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            flex: 1; /* Ensures the content area grows and pushes the footer down */
         }
 
-        /* Footer sticks to the bottom */
+        /* Footer styling */
         footer {
-            margin-top: auto;
+            background-color: #343a40;
+            color: #ffffff;
+            padding: 1rem;
+            text-align: center;
         }
     </style>
 </head>
-<body class="d-flex flex-column">
+<body class="d-flex flex-column min-vh-100">
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="{% url 'home' %}">ERAI</a>
@@ -52,14 +53,29 @@
 
     <!-- Main Content -->
     <main class="container mt-4 content-wrapper">
+
+        {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+
         {% block content %}
         <!-- Content will be injected here -->
         {% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-3">
-        <div class="container text-center">
+    <footer>
+        <div class="container">
             <p>&copy; 2024 ERAI. All rights reserved.</p>
         </div>
     </footer>
@@ -68,5 +84,13 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            setTimeout(function(){
+                $(".alert").alert('close');
+            }, 7500); // 7500ms = 7.5 seconds
+        });
+    </script>
+    
 </body>
 </html>

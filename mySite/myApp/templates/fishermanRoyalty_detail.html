@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}FishermanRoyalty Detail{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ fishermanRoyalty.name }} Payment Details</h2>
+
+    <!-- Display Total Amount to be Received -->
+    <div class="alert alert-info">
+        <h4 class="alert-heading">Total Amount to be Received:</h4>
+        <p>{{ total_to_be_received }}</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="text-danger">
+                <a href="#paymentsDueTable" data-toggle="collapse" aria-expanded="true" class="text-dark">
+                    Payments Due
+                </a>
+            </h3>
+            <div id="paymentsDueTable" class="collapse show">
+                <table class="table table-striped table-danger">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for date, data in payments_due_grouped.items %}
+                        <tr data-toggle="collapse" data-target="#dueDetails{{ forloop.counter }}" aria-expanded="false" aria-controls="dueDetails{{ forloop.counter }}">
+                            <td>{{ date }}</td>
+                            <td>{{ data.total }}</td>
+                        </tr>
+                        <tr id="dueDetails{{ forloop.counter }}" class="collapse">
+                            <td colspan="2">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Fish Type</th>
+                                            <th>Weight</th>
+                                            <th>Price per KG</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for detail in data.details %}
+                                        <tr>
+                                            <td>{{ detail.catch.fish.name }}</td>
+                                            <td>{{ detail.catch.weight }}</td>
+                                            <td>{{ detail.catch.fish.price }}</td>
+                                            <td>{{ detail.amount }}</td>
+                                            <td>{{ detail.payment_date }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total Due</th>
+                            <th>{{ total_due }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3 class="text-success">
+                <a href="#paymentsReceivedTable" data-toggle="collapse" aria-expanded="true" class="text-dark">
+                    Payments Received
+                </a>
+            </h3>
+            <div id="paymentsReceivedTable" class="collapse show">
+                <table class="table table-striped table-success">
+                    <thead>
+                        <tr>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments_received %}
+                        <tr>
+                            <td>{{ payment.amount }}</td>
+                            <td>{{ payment.payment_date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Total Received</th>
+                            <th>{{ total_received }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-4">Record a New Payment</h3>
+    <form method="post" onsubmit="return validateAmount()">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" step="0.01" class="form-control" id="amount" name="amount" min="1.00" max="{{ fishermanRoyalty.total_remaining }}" required>
+        </div>
+        <div class="form-group">
+            <label for="payment_date">Payment Date</label>
+            <input type="date" class="form-control" id="payment_date" name="payment_date" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Payment</button>
+        <a href="{% url 'fishermanRoyalty_summary' %}" class="btn btn-secondary">Back</a>
+    </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var paymentDateInput = document.getElementById('payment_date');
+    var today = new Date();
+    var sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 7);
+
+    var maxDate = today.toISOString().split('T')[0];
+    var minDate = sevenDaysAgo.toISOString().split('T')[0];
+
+    paymentDateInput.value = maxDate;  // Default to today
+    paymentDateInput.setAttribute('max', maxDate);
+    paymentDateInput.setAttribute('min', minDate);
+});
+
+function validateAmount() {
+    var amount = parseFloat(document.getElementById('amount').value);
+    var minAmount = parseFloat(document.getElementById('amount').min);
+    var maxAmount = parseFloat(document.getElementById('amount').max);
+
+    if (amount < minAmount || amount > maxAmount) {
+        alert('Please enter a valid amount between ' + minAmount + ' and ' + maxAmount + '.');
+        return false;
+    }
+    return true;
+}
+</script>
+{% endblock %}

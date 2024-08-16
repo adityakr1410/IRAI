@@ -1,6 +1,7 @@
 from datetime import timezone
 from django.db import models,transaction
 from django.forms import ValidationError
+from decimal import Decimal
 
 class Fish(models.Model):
     name = models.CharField(max_length=255)
@@ -9,7 +10,6 @@ class Fish(models.Model):
     
     def __str__(self):
         return self.name
-
 
 class Fisherman(models.Model):
     name = models.CharField(max_length=255)
@@ -81,8 +81,6 @@ class Fisherman(models.Model):
 
         return payment_summary
 
-
-
 class Catch(models.Model):
     fisherman = models.ForeignKey(Fisherman, on_delete=models.CASCADE)
     fish = models.ForeignKey(Fish, on_delete=models.CASCADE)
@@ -102,7 +100,6 @@ class Advance(models.Model):
     def __str__(self):
         return f'Advance of {self.amount} for {self.fisherman.name}'
 
-
 class Payment(models.Model):
     PAYMENT_TYPE_CHOICES = [
         ('Catch', 'Catch'),
@@ -116,3 +113,48 @@ class Payment(models.Model):
     
     def __str__(self):
         return f'Payment of {self.amount} to {self.fisherman.name} for {self.get_payment_type_display()}'
+
+class RoyaltyFisherman(models.Model):
+    name = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.name
+    
+class CatchRoyalty(models.Model):
+    fisherman = models.ForeignKey(RoyaltyFisherman, on_delete=models.CASCADE)
+    fish = models.ForeignKey(Fish, on_delete=models.CASCADE)
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
+    catch_date = models.DateField()
+
+    def save(self, *args, **kwargs):
+        # Call the parent class's save method
+        super().save(*args, **kwargs)
+        
+        # Calculate royalty amount
+        royalty_amount = self.weight * float(self.fish.royalty_amount)
+        
+        # Create PaymentRoyalty record
+        PaymentRoyalty.objects.create(
+            fisherman=self.fisherman,
+            amount=royalty_amount,
+            catch = self,
+            payment_date=self.catch_date
+        )
+
+    def __str__(self):
+        return f"{self.fish.name} - {self.weight} kg"
+
+class PaymentRoyalty(models.Model):
+    fisherman = models.ForeignKey(RoyaltyFisherman, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    catch = models.ForeignKey(CatchRoyalty, on_delete=models.CASCADE,default=1)
+    payment_date = models.DateField()
+
+    def __str__(self):
+        return f"{self.fisherman.name} - {self.amount} on {self.payment_date}"
+    
+class PaymentRoyaltyRecived(models.Model):
+    fisherman = models.ForeignKey(RoyaltyFisherman, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateField()

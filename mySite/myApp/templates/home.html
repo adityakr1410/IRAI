@@ -3,6 +3,67 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Welcome to ERAI Dashboard</h2>
 
-    
+    <div class="row">
+        <!-- FishermanRoyalty Management Section -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>FishermanRoyalty Management</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'fishermanRoyalty_summary' %}" class="btn btn-link">FishermanRoyalty Summary</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Management Section -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4>Payment Management</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'payment_summary' %}" class="btn btn-link">Payment Summary</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Catch Management Section -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4>Catch Management</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'log_catch' %}" class="btn btn-link">Log Catch</a></li>
+                        <li><a href="{% url 'unpaid_catches' fisherman_id=1 %}" class="btn btn-link">Unpaid Catches</a></li> <!-- Replace fisherman_id=1 with dynamic value -->
+                        <li><a href="{% url 'register_catch_royalty' %}" class="btn btn-link">Register Catch Royalty</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advance Payment Section -->
+        <div class="col-md-4 mt-4">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4>Advance Payment</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'give_advance' fisherman_id=1 %}" class="btn btn-link">Give Advance</a></li> <!-- Replace fisherman_id=1 with dynamic value -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

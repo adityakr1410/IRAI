@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}FishermanRoyalty Summary{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>FishermanRoyalty Payment Summary</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>FishermanRoyalty</th>
+                <th>Total Due</th>
+                <th>Total Received</th>
+                <th>Total Remaining</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fishermanRoyalty in fishermanRoyalties %}
+            <tr>
+                <td>{{ fishermanRoyalty.name }}</td>
+                <td>{{ fishermanRoyalty.total_due }}</td>
+                <td>{{ fishermanRoyalty.total_received }}</td>
+                <td>{{ fishermanRoyalty.total_remaining }}</td>
+                <td>
+                    <a href="{% url 'fishermanRoyalty_detail' fishermanRoyalty.pk %}" class="btn btn-primary">Update</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

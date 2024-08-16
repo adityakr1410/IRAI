@@ -17,3 +17,9 @@ admin.site.register(Advance)
 
 # Registering Payment model
 admin.site.register(Payment)
+
+admin.site.register(RoyaltyFisherman)
+
+admin.site.register(CatchRoyalty)
+
+admin.site.register(PaymentRoyalty)

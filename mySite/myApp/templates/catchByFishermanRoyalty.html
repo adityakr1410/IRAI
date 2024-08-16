@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Register Catch Royalty{% endblock %}
+
+{% block content %}
+    <h1>Register Catch Royalty</h1>
+
+    <form method="post" action="{% url 'register_catch_royalty' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="fisherman">Select Fisherman:</label>
+            <select name="fisherman" id="fisherman" class="form-control" required>
+                {% for fisherman in fishermen %}
+                    <option value="{{ fisherman.id }}">{{ fisherman.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="catch_date">Catch Date:</label>
+            <input type="date" id="catch_date" name="catch_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="fish_weights">Enter Weight for Each Fish:</label>
+            <div class="row" id="fish_weights">
+                {% for fish in fish_list %}
+                    <div class="col-md-4 mb-3">
+                        <div class="form-group">
+                            <label for="weight_{{ fish.id }}">{{ fish.name }} (Royalty: ₹{{ fish.royalty_amount }}):</label>
+                            <input type="number" name="weight_{{ fish.id }}" id="weight_{{ fish.id }}" class="form-control" step="0.01" min="0">
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const lastDate = new Date();
+            lastDate.setDate(today.getDate() - 7);
+
+            const formatDate = (date) => date.toISOString().split('T')[0];
+
+            const dateInput = document.getElementById('catch_date');
+            dateInput.value = formatDate(today);
+            dateInput.setAttribute('max', formatDate(today));
+            dateInput.setAttribute('min', formatDate(lastDate));
+        });
+    </script>
+{% endblock %}
