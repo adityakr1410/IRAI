@@ -36,6 +36,14 @@ def unpaid_catches_view(request, fisherman_id):
             messages.error(request, "Invalid payment amount. Please enter a positive value.")
             return redirect('unpaid_catches', fisherman_id=fisherman_id)
 
+        if total_unpaid_salary<payment_amount:
+            adv_amt = payment_amount-float(total_unpaid_salary)
+            check=advance_giver(fisherman=fisherman,amount=adv_amt,reason="Given during salary payment",date_requested=timezone.now().date())
+
+        payment_amount = payment_amount-adv_amt
+        if payment_amount==0:
+            messages.success(request, "Advance successfully recorded.")
+            return redirect('unpaid_catches', fisherman_id=fisherman_id)
         min_pay = total_unpaid_salary - total_adv
         if payment_amount < min_pay:
             messages.error(request, "Cannot pay less than the total salary minus the advance.")
@@ -100,6 +108,25 @@ def log_catch(request):
         fish_list = Fish.objects.all()
         return render(request, 'catchByFisherman.html', {'fishermen': fishermen, 'fish_list': fish_list})
 
+def advance_giver(fisherman,amount,reason,date_requested):
+    try:
+        amount = float(amount)
+        Advance.objects.create(
+            fisherman=fisherman,
+            amount=amount,
+            reason=reason,
+            date_requested=date_requested
+        )
+        Payment.objects.create(
+            fisherman=fisherman,
+            payment_date=timezone.now().date(),
+            amount=amount,
+            payment_type='Advance'
+        )
+        return True
+    except ValueError:
+        return False
+
 def give_advance_view(request, fisherman_id):
     fisherman = get_object_or_404(Fisherman, pk=fisherman_id)
 
@@ -111,24 +138,13 @@ def give_advance_view(request, fisherman_id):
         if not amount or not reason or not date_requested:
             messages.error(request, 'All fields are required.')
         else:
-            try:
-                amount = float(amount)
-                Advance.objects.create(
-                    fisherman=fisherman,
-                    amount=amount,
-                    reason=reason,
-                    date_requested=date_requested
-                )
-                Payment.objects.create(
-                    fisherman=fisherman,
-                    payment_date=timezone.now().date(),
-                    amount=amount,
-                    payment_type='Advance'
-                )
+            check = advance_giver(fisherman=fisherman,amount=amount,reason=reason,date_requested=date_requested)
+            if check:
                 messages.success(request, f'Advance of ₹{amount} successfully given to {fisherman.name}.')
-                return redirect('payment_summary')
-            except ValueError:
+                redirect('payment_summary')
+            else:
                 messages.error(request, 'Invalid amount entered.')
+            
     return render(request, 'give_advance.html', {'fisherman': fisherman})
 
 def log_catch_royalty(request):
