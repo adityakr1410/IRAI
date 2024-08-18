@@ -23,3 +23,5 @@ admin.site.register(RoyaltyFisherman)
 admin.site.register(CatchRoyalty)
 
 admin.site.register(PaymentRoyalty)
+
+admin.site.register(PaymentRoyaltyRecived)

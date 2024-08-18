@@ -7,9 +7,9 @@
     <h2>{{ fishermanRoyalty.name }} Payment Details</h2>
 
     <!-- Display Total Amount to be Received -->
-    <div class="alert alert-info">
-        <h4 class="alert-heading">Total Amount to be Received:</h4>
-        <p>{{ total_to_be_received }}</p>
+    <div class="border p-3 mb-4" style="background-color: #e9f7fe;">
+        <h4 class="font-weight-bold">Total Amount to be Received:</h4>
+        <p class="font-weight-bold" style="font-size: 1.5rem;">{{ total_to_be_received }}</p>
     </div>
 
     <div class="row">
@@ -108,7 +108,7 @@
         {% csrf_token %}
         <div class="form-group">
             <label for="amount">Amount</label>
-            <input type="number" step="0.01" class="form-control" id="amount" name="amount" min="1.00" max="{{ fishermanRoyalty.total_remaining }}" required>
+            <input type="number" step="0.01" class="form-control" id="amount" name="amount" min="1.00" max="{{ total_to_be_received }}" required>
         </div>
         <div class="form-group">
             <label for="payment_date">Payment Date</label>
