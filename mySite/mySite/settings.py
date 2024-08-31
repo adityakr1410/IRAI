@@ -37,9 +37,10 @@ SECRET_KEY = 'django-insecure-^s82t@dpt+!+v@_x45ukpd#)oe5hcaj1vu*v(9fw!)2+l0tt#5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','889b-49-37-113-243.ngrok-free.app','127.0.0.1']
+ALLOWED_HOSTS = ['localhost','889b-49-37-113-243.ngrok-free.app','127.0.0.1','irai.onrender.com']
 
 CSRF_TRUSTED_ORIGINS = [        #for ngrok
+    'https://irai.onrender.com',
     'https://889b-49-37-113-243.ngrok-free.app',  # Replace with your actual Ngrok domain
 ]
 
