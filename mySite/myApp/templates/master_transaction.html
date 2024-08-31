@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Master Transaction Summary{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Master Transaction Summary</h2>
+
+    <!-- Total for the Last 7 Days -->
+    <div class="mb-4">
+        <h4>Total for the Last 7 Days - ₹{{ total_last_7_days }}</h4>
+    </div>
+
+    <div class="accordion" id="accordion">
+        {% for date, types in transactions.items %}
+        <div class="card mb-3">
+            <div class="card-header" id="heading-{{ date|date:'Ymd' }}">
+                <h5 class="mb-0 d-flex justify-content-between">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ date|date:'Ymd' }}" aria-expanded="false" aria-controls="collapse-{{ date|date:'Ymd' }}">
+                        {{ date }}
+                    </button>
+                    <span>Total for {{ date }}: ₹{{ types.total_amount }}</span>
+                </h5>
+            </div>
+            <div id="collapse-{{ date|date:'Ymd' }}" class="collapse" aria-labelledby="heading-{{ date|date:'Ymd' }}" data-parent="#accordion">
+                <div class="card-body">
+                    <!-- Fisherman Payments -->
+                    <div class="mb-3">
+                        <button class="btn btn-outline-primary" type="button" data-toggle="collapse" data-target="#fisherman-{{ date|date:'Ymd' }}" aria-expanded="false" aria-controls="fisherman-{{ date|date:'Ymd' }}">
+                            Payments to Fishermen ₹{{ types.total_fisherman }}
+                        </button>
+                        <div class="collapse mt-2" id="fisherman-{{ date|date:'Ymd' }}">
+                            <div class="card card-body">
+                                {% for payment in types.fisherman %}
+                                    <p class="text-danger">
+                                        {{ payment.amount }} to {{ payment.fisherman.name }} for {{ payment.get_payment_type_display }}
+                                    </p>
+                                {% empty %}
+                                    <p>No payments to fishermen on this date.</p>
+                                {% endfor %}
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Royalty Fisherman Payments -->
+                    <div class="mb-3">
+                        <button class="btn btn-outline-success" type="button" data-toggle="collapse" data-target="#royalty-{{ date|date:'Ymd' }}" aria-expanded="false" aria-controls="royalty-{{ date|date:'Ymd' }}">
+                            Payments Received from Royalty Fishermen ₹{{ types.total_royalty }}
+                        </button>
+                        <div class="collapse mt-2" id="royalty-{{ date|date:'Ymd' }}">
+                            <div class="card card-body">
+                                {% for royalty in types.royalty %}
+                                    <p class="text-success">
+                                        {{ royalty.amount }} from {{ royalty.fisherman.name }}
+                                    </p>
+                                {% empty %}
+                                    <p>No payments received from royalty fishermen on this date.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Miscellaneous Expenses -->
+                    <div class="mb-3">
+                        <button class="btn btn-outline-warning" type="button" data-toggle="collapse" data-target="#miscellaneous-{{ date|date:'Ymd' }}" aria-expanded="false" aria-controls="miscellaneous-{{ date|date:'Ymd' }}">
+                            Miscellaneous Expenses ₹{{ types.total_miscellaneous }}
+                        </button>
+                        <div class="collapse mt-2" id="miscellaneous-{{ date|date:'Ymd' }}">
+                            <div class="card card-body">
+                                {% for expense in types.miscellaneous %}
+                                    <p class="text-danger">
+                                        {{ expense.amount }} spent on {{ expense.spent_on }} by {{ expense.spender.username }}
+                                    </p>
+                                {% empty %}
+                                    <p>No miscellaneous expenses on this date.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No transactions found.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

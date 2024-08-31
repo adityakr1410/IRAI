@@ -9,6 +9,8 @@ from django.db.models.functions import Coalesce
 from collections import defaultdict
 from django.urls import reverse
 from django.utils.dateparse import parse_date
+from django.contrib.auth.decorators import login_required
+from datetime import timedelta
 
 
 def home(request):
@@ -29,31 +31,44 @@ def unpaid_catches_view(request, fisherman_id):
     advance = Advance.objects.filter(fisherman=fisherman)
     total_adv = sum(x.amount for x in advance)
 
+    managers = Manager.objects.all()
+
     if request.method == 'POST':
         payment_amount = float(request.POST.get('payment_amount', 0))
+        payy = payment_amount
+        manager_id = request.POST.get('manager')
+        manager = get_object_or_404(Manager, id=manager_id)
 
         if payment_amount <= 0:
             messages.error(request, "Invalid payment amount. Please enter a positive value.")
             return redirect('unpaid_catches', fisherman_id=fisherman_id)
 
-        if total_unpaid_salary<payment_amount:
-            adv_amt = payment_amount-float(total_unpaid_salary)
-            check=advance_giver(fisherman=fisherman,amount=adv_amt,reason="Given during salary payment",date_requested=timezone.now().date())
+        adv_amt = 0  # Initialize advance amount variable
+        if total_unpaid_salary < payment_amount:
+            adv_amt = payment_amount - float(total_unpaid_salary)
+            Advance.objects.create(fisherman=fisherman, amount=adv_amt, reason="Given during salary payment", date_requested=timezone.now().date(), manager=manager)
 
-        payment_amount = payment_amount-adv_amt
-        if payment_amount==0:
+        payment_amount = payment_amount - adv_amt if adv_amt > 0 else payment_amount
+        if payment_amount == 0:
             messages.success(request, "Advance successfully recorded.")
+            
+            print(manager)
+            manager.balance = (float(manager.balance) )-  float(payy)
+            manager.save()
             return redirect('unpaid_catches', fisherman_id=fisherman_id)
+        
         min_pay = total_unpaid_salary - total_adv
         if payment_amount < min_pay:
             messages.error(request, "Cannot pay less than the total salary minus the advance.")
             return redirect('unpaid_catches', fisherman_id=fisherman_id)
 
+        # Create payment and associate it with the manager
         Payment.objects.create(
             fisherman=fisherman,
             payment_date=timezone.now().date(),
             amount=payment_amount,
-            payment_type='Catch'
+            payment_type='Catch',
+            manager=manager
         )
 
         for catch in unpaid_catches:
@@ -66,8 +81,13 @@ def unpaid_catches_view(request, fisherman_id):
                 fisherman=fisherman,
                 amount=-deduct,
                 reason="Deduction",
-                date_requested=timezone.now().date()
+                date_requested=timezone.now().date(),
+                manager=manager
             )
+        print("Hello world "*5)
+        # Update manager balance
+        manager.balance = float(manager.balance) -  float(payy)
+        manager.save()
 
         messages.success(request, "Payment successfully recorded and catches marked as paid.")
         return redirect('unpaid_catches', fisherman_id=fisherman_id)
@@ -78,7 +98,8 @@ def unpaid_catches_view(request, fisherman_id):
         'total_unpaid_salary': total_unpaid_salary,
         'advance': advance,
         'total_advance': total_adv,
-        'min_payment': total_unpaid_salary - total_adv
+        'min_payment': total_unpaid_salary - total_adv,
+        'managers': managers,
     }
     return render(request, 'unpaid_catches.html', context)
 
@@ -108,44 +129,49 @@ def log_catch(request):
         fish_list = Fish.objects.all()
         return render(request, 'catchByFisherman.html', {'fishermen': fishermen, 'fish_list': fish_list})
 
-def advance_giver(fisherman,amount,reason,date_requested):
+def advance_giver(fisherman,amount,reason,date_requested,manager):
     try:
         amount = float(amount)
         Advance.objects.create(
             fisherman=fisherman,
             amount=amount,
             reason=reason,
-            date_requested=date_requested
+            date_requested=date_requested,
+            manager=manager
         )
         Payment.objects.create(
             fisherman=fisherman,
             payment_date=timezone.now().date(),
             amount=amount,
-            payment_type='Advance'
+            payment_type='Advance',
+            manager=manager
         )
+        manager.balance = float(manager.balance) - float(amount)
+        manager.save()
         return True
     except ValueError:
         return False
 
 def give_advance_view(request, fisherman_id):
     fisherman = get_object_or_404(Fisherman, pk=fisherman_id)
-
+    managers = Manager.objects.all()
     if request.method == 'POST':
         amount = request.POST.get('amount')
         reason = request.POST.get('reason')
         date_requested = request.POST.get('date_requested')
-
+        manager_id = request.POST.get('manager')
+        manager = get_object_or_404(Manager, id=manager_id)
         if not amount or not reason or not date_requested:
             messages.error(request, 'All fields are required.')
         else:
-            check = advance_giver(fisherman=fisherman,amount=amount,reason=reason,date_requested=date_requested)
+            check = advance_giver(fisherman=fisherman,amount=amount,reason=reason,date_requested=date_requested,manager=manager)
             if check:
                 messages.success(request, f'Advance of ₹{amount} successfully given to {fisherman.name}.')
                 redirect('payment_summary')
             else:
                 messages.error(request, 'Invalid amount entered.')
             
-    return render(request, 'give_advance.html', {'fisherman': fisherman})
+    return render(request, 'give_advance.html', {'fisherman': fisherman,"managers":managers})
 
 def log_catch_royalty(request):
     if request.method == 'POST':
@@ -192,7 +218,7 @@ def fishermanRoyalty_summary(request):
         total_due = PaymentRoyalty.objects.filter(fisherman=r).aggregate(
             total=Coalesce(Sum('amount'), 0, output_field=DecimalField())
         )['total']
-        total_received = PaymentRoyaltyRecived.objects.filter(fisherman=r).aggregate(
+        total_received = PaymentRoyaltyReceived.objects.filter(fisherman=r).aggregate(
             total=Coalesce(Sum('amount'), 0, output_field=DecimalField())
         )['total']
         fManR.append(
@@ -211,10 +237,11 @@ def fishermanRoyalty_summary(request):
     return render(request, 'fishermanRoyalty_summary.html', context)
 
 def fishermanRoyalty_detail(request, pk):
+    managers = Manager.objects.all()
     fishermanRoyalty = get_object_or_404(RoyaltyFisherman, pk=pk)
 
     payments_due = PaymentRoyalty.objects.filter(fisherman=fishermanRoyalty).order_by('-payment_date')
-    payments_received = PaymentRoyaltyRecived.objects.filter(fisherman=fishermanRoyalty).order_by('-payment_date')
+    payments_received = PaymentRoyaltyReceived.objects.filter(fisherman=fishermanRoyalty).order_by('-payment_date')
 
     payments_due_grouped = defaultdict(lambda: {'total': 0, 'details': []})
     for payment in payments_due:
@@ -232,6 +259,9 @@ def fishermanRoyalty_detail(request, pk):
     if request.method == 'POST':
         amount = request.POST.get('amount')
         payment_date = request.POST.get('payment_date')
+        manager_id = request.POST.get('manager')
+        manager = get_object_or_404(Manager, id=manager_id)
+
 
         if not amount or not payment_date:
             messages.error(request, "Amount and payment date are required.")
@@ -245,11 +275,15 @@ def fishermanRoyalty_detail(request, pk):
 
         payment_date = parse_date(payment_date)
 
-        PaymentRoyaltyRecived.objects.create(
+        PaymentRoyaltyReceived.objects.create(
             fisherman=fishermanRoyalty,
             amount=amount,
-            payment_date=payment_date
+            payment_date=payment_date,
+            manager=manager
         )
+
+        manager.balance = float(manager.balance) + float(amount)
+        manager.save()
 
         messages.success(request, "Payment successfully recorded.")
         return redirect(reverse('fishermanRoyalty_detail', args=[pk]))
@@ -261,7 +295,211 @@ def fishermanRoyalty_detail(request, pk):
         'total_due': total_due,
         'total_received': total_received,
         'total_to_be_received': total_to_be_received,
+        'managers':managers
     }
 
     return render(request, 'fishermanRoyalty_detail.html', context)
 
+def manager_list_view(request):
+    """
+    View to display a list of all managers and their current balance.
+    """
+    managers = Manager.objects.all()
+    return render(request, 'manager_list.html', {'managers': managers})
+
+def manager_detail_view(request, manager_id):
+    """
+    View to display all payments sent and received by a specific manager.
+    """
+    manager = get_object_or_404(Manager, id=manager_id)
+    payments_sent = Payment.objects.filter(manager=manager)
+    payments_received = PaymentRoyaltyReceived.objects.filter(manager=manager)
+
+    context = {
+        'manager': manager,
+        'payments_sent': payments_sent,
+        'payments_received': payments_received,
+    }
+    return render(request, 'manager_detail.html', context)
+
+
+
+
+@login_required
+def give_money_to_manager_view(request):
+    owner = get_object_or_404(Owner, user=request.user)  # Ensure the logged-in user is an owner
+
+    if request.method == "POST":
+        manager_id = request.POST.get('manager')
+        amount = request.POST.get('amount')
+        note = request.POST.get('note')
+
+        # Validation
+        if not manager_id or not amount:
+            messages.error(request, "Manager and amount are required fields.")
+            return redirect('give_money_to_manager')
+
+        try:
+            amount = Decimal(amount)
+            if amount <= 0:
+                messages.error(request, "Amount must be greater than zero.")
+                return redirect('give_money_to_manager')
+        except ValueError:
+            messages.error(request, "Invalid amount.")
+            return redirect('give_money_to_manager')
+
+        manager = get_object_or_404(Manager, id=manager_id)
+
+        # Create the transaction
+        transaction = OwnerToManagerTransaction.objects.create(
+            owner=owner,
+            manager=manager,
+            amount=amount,
+            note=note
+        )
+
+        messages.success(request, f"Successfully transferred {transaction.amount} to {transaction.manager}.")
+        return redirect('home')
+
+    managers = Manager.objects.all()  # Fetch all managers to populate the dropdown
+    context = {
+        'managers': managers
+    }
+    return render(request, 'give_money_to_manager.html', context)
+
+def add_money_to_manager(request):
+    if request.method == 'POST':
+        owner_id = request.POST.get('owner')
+        manager_id = request.POST.get('manager')
+        amount = request.POST.get('amount')
+        note = request.POST.get('note', '')
+
+        try:
+            owner = Owner.objects.get(id=owner_id)
+            manager = Manager.objects.get(id=manager_id)
+            amount = Decimal(amount)
+
+            # Create the transaction
+            transaction = OwnerToManagerTransaction(
+                owner=owner,
+                manager=manager,
+                amount=amount,
+                note=note
+            )
+            transaction.save()
+
+            messages.success(request, f'{amount} was successfully added to {manager.user.username} by {owner.user.username}.')
+            return redirect('add_money')  # Redirect back to the form page
+        except (Owner.DoesNotExist, Manager.DoesNotExist):
+            messages.error(request, 'Owner or Manager not found.')
+        except ValueError:
+            messages.error(request, 'Invalid amount. Please enter a valid number.')
+
+    owners = Owner.objects.all()
+    managers = Manager.objects.all()
+    return render(request, 'add_money_to_manager.html', {'owners': owners, 'managers': managers})
+
+def add_miscellaneous_expense(request):
+    users = User.objects.all()  # Fetch all users for the dropdown
+
+    if request.method == 'POST':
+        amount = float(request.POST.get('amount'))
+        spender_id = request.POST.get('spender')  # Get spender from form data
+        spent_on = request.POST.get('spent_on')
+        context = request.POST.get('context')
+        date_spent = request.POST.get('date_spent', timezone.now().date())  # Defaults to today if not provided
+
+        # Convert date_spent to the correct format
+        date_spent = timezone.datetime.strptime(date_spent, '%Y-%m-%d').date() if date_spent else timezone.now().date()
+
+        try:
+            spender = User.objects.get(id=spender_id)  # Fetch the selected user as the spender
+        except User.DoesNotExist:
+            messages.error(request, 'Selected user does not exist.')
+            return redirect('add_miscellaneous_expense')
+
+        # Create the MiscellaneousExpense instance
+        MiscellaneousExpense.objects.create(
+            amount=amount,
+            spender=spender,
+            spent_on=spent_on,
+            context=context,
+            date_spent=date_spent
+        )
+
+        # Check if the spender is a manager and update their balance if necessary
+        try:
+            manager = Manager.objects.get(user=spender)
+            # Deduct the amount from the manager's balance
+            manager.balance = float(manager.balance) -amount
+            manager.save()
+        except Manager.DoesNotExist:
+            # The spender is not a manager, no need to adjust balance
+            pass
+
+        messages.success(request, 'Miscellaneous expense added successfully.')
+        return redirect('add_miscellaneous_expense')  # Redirect back to the form page
+
+    return render(request, 'add_miscellaneous_expense.html', {'users': users})
+
+    return render(request, 'add_miscellaneous_expense.html', {'users': users})
+
+def master_transaction_view(request):
+    # Fetch all transactions
+    payments = Payment.objects.all().order_by('payment_date')
+    royalty_payments = PaymentRoyaltyReceived.objects.all().order_by('payment_date')
+    miscellaneous_expenses = MiscellaneousExpense.objects.all().order_by('date_spent')
+
+    # Combine and group transactions by date
+    transactions = {}
+    total_last_7_days = 0
+
+    # Helper functions to calculate totals
+    def calculate_total(amounts):
+        return sum(amounts) if amounts else 0
+
+    for payment in payments:
+        date = payment.payment_date
+        if date not in transactions:
+            transactions[date] = {'fisherman': [], 'royalty': [], 'miscellaneous': [], 'total_amount': 0}
+        transactions[date]['fisherman'].append(payment)
+        transactions[date]['total_amount'] += payment.amount
+
+    for royalty_payment in royalty_payments:
+        date = royalty_payment.payment_date
+        if date not in transactions:
+            transactions[date] = {'fisherman': [], 'royalty': [], 'miscellaneous': [], 'total_amount': 0}
+        transactions[date]['royalty'].append(royalty_payment)
+        transactions[date]['total_amount'] += royalty_payment.amount
+
+    for expense in miscellaneous_expenses:
+        date = expense.date_spent
+        if date not in transactions:
+            transactions[date] = {'fisherman': [], 'royalty': [], 'miscellaneous': [], 'total_amount': 0}
+        transactions[date]['miscellaneous'].append(expense)
+        transactions[date]['total_amount'] += expense.amount
+
+    # Calculate totals for each payment type by date
+    for date, types in transactions.items():
+        types['total_fisherman'] = calculate_total(payment.amount for payment in types['fisherman'])
+        types['total_royalty'] = calculate_total(royalty.amount for royalty in types['royalty'])
+        types['total_miscellaneous'] = calculate_total(expense.amount for expense in types['miscellaneous'])
+
+    # Sort transactions by date
+    sorted_transactions = dict(sorted(transactions.items(), reverse=True))
+
+    # Calculate total for the last 7 days
+    today = timezone.now().date()
+    last_week_start = today - timedelta(days=7)
+    total_last_7_days = 0
+
+    for date, types in sorted_transactions.items():
+        if date >= last_week_start:
+            total_last_7_days += types['total_amount']
+
+    context = {
+        'transactions': sorted_transactions,
+        'total_last_7_days': total_last_7_days,
+    }
+    
+    return render(request, 'master_transaction.html', context)

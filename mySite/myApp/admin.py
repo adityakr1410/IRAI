@@ -24,4 +24,12 @@ admin.site.register(CatchRoyalty)
 
 admin.site.register(PaymentRoyalty)
 
-admin.site.register(PaymentRoyaltyRecived)
+admin.site.register(PaymentRoyaltyReceived)
+
+admin.site.register(Owner)
+
+admin.site.register(Manager)
+
+admin.site.register(MiscellaneousExpense)
+
+admin.site.register(OwnerToManagerTransaction)

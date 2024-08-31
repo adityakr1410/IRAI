@@ -1,0 +1,39 @@
+<!-- templates/give_money_to_manager.html -->
+{% extends 'base.html' %}
+
+{% block title %}Give Money to Manager{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Give Money to Manager</h2>
+
+    <form method="POST" action="{% url 'give_money_to_manager' %}" class="form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="manager">Select Manager:</label>
+            <select class="form-control" id="manager" name="manager" required>
+                <option value="" disabled selected>Select a Manager</option>
+                {% for manager in managers %}
+                <option value="{{ manager.id }}">{{ manager.user.username }} - Current Balance: {{ manager.balance }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="number" step="0.01" class="form-control" id="amount" name="amount" placeholder="Enter amount" required>
+        </div>
+
+        <div class="form-group">
+            <label for="note">Note (Optional):</label>
+            <textarea class="form-control" id="note" name="note" rows="3" placeholder="Enter any note"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <div class="mt-3">
+        <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

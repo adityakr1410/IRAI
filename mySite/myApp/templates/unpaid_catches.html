@@ -91,6 +91,17 @@
                        placeholder="Payment Amount" 
                        title="Amount must be between ₹{{ min_payment }} and ₹{{ total_unpaid_salary }}">
             </div>
+
+            <div class="form-group mb-2">
+                <label for="manager" class="mr-2">Select Manager</label>
+                <select id="manager" name="manager" class="form-control" required>
+                    {% for manager in managers %}
+                        <option value="{{ manager.id }}">{{ manager.user.username }} - Balance: ₹{{ manager.balance }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+
             <button type="submit" class="btn btn-primary mb-2">Submit Payment</button>
         </form>
 

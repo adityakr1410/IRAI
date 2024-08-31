@@ -37,10 +37,10 @@ SECRET_KEY = 'django-insecure-^s82t@dpt+!+v@_x45ukpd#)oe5hcaj1vu*v(9fw!)2+l0tt#5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','86a8-49-37-113-99.ngrok-free.app','127.0.0.1']
+ALLOWED_HOSTS = ['localhost','889b-49-37-113-243.ngrok-free.app','127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [        #for ngrok
-    'https://86a8-49-37-113-99.ngrok-free.app',  # Replace with your actual Ngrok domain
+    'https://889b-49-37-113-243.ngrok-free.app',  # Replace with your actual Ngrok domain
 ]
 
 # Application definition
@@ -100,20 +100,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization
