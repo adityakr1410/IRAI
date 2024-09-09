@@ -19,7 +19,7 @@
                     <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ date|date:'Ymd' }}" aria-expanded="false" aria-controls="collapse-{{ date|date:'Ymd' }}">
                         {{ date }}
                     </button>
-                    <span>Total for {{ date }}: ₹{{ types.total_amount }}</span>
+                    {% comment %} <span>Total for {{ date }}: ₹{{ types.total_amount_received - types.total_amount_spent }}</span> {% endcomment %}
                 </h5>
             </div>
             <div id="collapse-{{ date|date:'Ymd' }}" class="collapse" aria-labelledby="heading-{{ date|date:'Ymd' }}" data-parent="#accordion">
@@ -27,18 +27,17 @@
                     <!-- Fisherman Payments -->
                     <div class="mb-3">
                         <button class="btn btn-outline-primary" type="button" data-toggle="collapse" data-target="#fisherman-{{ date|date:'Ymd' }}" aria-expanded="false" aria-controls="fisherman-{{ date|date:'Ymd' }}">
-                            Payments to Fishermen ₹{{ types.total_fisherman }}
+                            Payments to Fishermen ₹{{ types.total_amount_spent }}
                         </button>
                         <div class="collapse mt-2" id="fisherman-{{ date|date:'Ymd' }}">
                             <div class="card card-body">
                                 {% for payment in types.fisherman %}
                                     <p class="text-danger">
-                                        {{ payment.amount }} to {{ payment.fisherman.name }} for {{ payment.get_payment_type_display }}
+                                        ₹{{ payment.amount }} spent on {{ payment.payment_date }} to {{ payment.fisherman.name }} for {{ payment.get_payment_type_display }}
                                     </p>
                                 {% empty %}
                                     <p>No payments to fishermen on this date.</p>
                                 {% endfor %}
-                                
                             </div>
                         </div>
                     </div>
@@ -46,13 +45,14 @@
                     <!-- Royalty Fisherman Payments -->
                     <div class="mb-3">
                         <button class="btn btn-outline-success" type="button" data-toggle="collapse" data-target="#royalty-{{ date|date:'Ymd' }}" aria-expanded="false" aria-controls="royalty-{{ date|date:'Ymd' }}">
-                            Payments Received from Royalty Fishermen ₹{{ types.total_royalty }}
+                            Payments Received from Royalty Fishermen ₹{{ types.total_amount_received }}
                         </button>
                         <div class="collapse mt-2" id="royalty-{{ date|date:'Ymd' }}">
                             <div class="card card-body">
-                                {% for royalty in types.royalty %}
+                                {% for royalty in types.
+                                    {% for royalty in types.royalty %}
                                     <p class="text-success">
-                                        {{ royalty.amount }} from {{ royalty.fisherman.name }}
+                                        ₹{{ royalty.amount }} received on {{ royalty.payment_date }} from {{ royalty.fisherman.name }}
                                     </p>
                                 {% empty %}
                                     <p>No payments received from royalty fishermen on this date.</p>
@@ -64,13 +64,13 @@
                     <!-- Miscellaneous Expenses -->
                     <div class="mb-3">
                         <button class="btn btn-outline-warning" type="button" data-toggle="collapse" data-target="#miscellaneous-{{ date|date:'Ymd' }}" aria-expanded="false" aria-controls="miscellaneous-{{ date|date:'Ymd' }}">
-                            Miscellaneous Expenses ₹{{ types.total_miscellaneous }}
+                            Miscellaneous Expenses ₹{{ types.total_amount_spent }}
                         </button>
                         <div class="collapse mt-2" id="miscellaneous-{{ date|date:'Ymd' }}">
                             <div class="card card-body">
                                 {% for expense in types.miscellaneous %}
                                     <p class="text-danger">
-                                        {{ expense.amount }} spent on {{ expense.spent_on }} by {{ expense.spender.username }}
+                                        ₹{{ expense.amount }} spent on {{ expense.spent_on }} by {{ expense.spender.username }}
                                     </p>
                                 {% empty %}
                                     <p>No miscellaneous expenses on this date.</p>

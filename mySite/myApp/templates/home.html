@@ -7,6 +7,21 @@
     <h2 class="text-center mb-4">Welcome to ERAI Dashboard</h2>
 
     <div class="row">
+        <!-- Fisherman Management Section -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>Fisherman Management</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'add_fisherman' %}" class="btn btn-link">Add Fisherman</a></li>
+                        <li><a href="{% url 'add_royalty_fisherman' %}" class="btn btn-link">Add Royalty Fisherman</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- FishermanRoyalty Management Section -->
         <div class="col-md-4">
             <div class="card">
@@ -37,7 +52,7 @@
         </div>
 
         <!-- Catch Management Section -->
-        <div class="col-md-4">
+        <div class="col-md-4 mt-4">
             <div class="card">
                 <div class="card-header bg-info text-white">
                     <h4>Catch Management</h4>
@@ -47,6 +62,21 @@
                         <li><a href="{% url 'log_catch' %}" class="btn btn-link">Log Catch</a></li>
                         <li><a href="{% url 'unpaid_catches' fisherman_id=1 %}" class="btn btn-link">Unpaid Catches</a></li> <!-- Replace fisherman_id=1 with dynamic value -->
                         <li><a href="{% url 'register_catch_royalty' %}" class="btn btn-link">Register Catch Royalty</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fish Management Section -->
+        <div class="col-md-4 mt-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h4>Fish Management</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'edit_fish_prices' %}" class="btn btn-link">Edit Fish Prices</a></li>
+                        <li><a href="{% url 'delete_fish' fish_id=1 %}" class="btn btn-link">Delete Fish</a></li> <!-- Replace fish_id=1 with dynamic value -->
                     </ul>
                 </div>
             </div>

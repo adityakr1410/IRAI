@@ -444,46 +444,61 @@ def add_miscellaneous_expense(request):
 
     return render(request, 'add_miscellaneous_expense.html', {'users': users})
 
+
+from datetime import timedelta
+from django.utils import timezone
+from django.shortcuts import render
+
 def master_transaction_view(request):
     # Fetch all transactions
     payments = Payment.objects.all().order_by('payment_date')
+    # advances = Advance.objects.all().order_by('payment_date')
     royalty_payments = PaymentRoyaltyReceived.objects.all().order_by('payment_date')
     miscellaneous_expenses = MiscellaneousExpense.objects.all().order_by('date_spent')
 
     # Combine and group transactions by date
     transactions = {}
-    total_last_7_days = 0
-
-    # Helper functions to calculate totals
-    def calculate_total(amounts):
-        return sum(amounts) if amounts else 0
+    total_last_7_days_received = 0
+    total_last_7_days_spent = 0
 
     for payment in payments:
         date = payment.payment_date
         if date not in transactions:
-            transactions[date] = {'fisherman': [], 'royalty': [], 'miscellaneous': [], 'total_amount': 0}
+            transactions[date] = {
+                'fisherman': [],
+                'royalty': [],
+                'miscellaneous': [],
+                'total_amount_spent': 0,
+                'total_amount_received': 0
+            }
         transactions[date]['fisherman'].append(payment)
-        transactions[date]['total_amount'] += payment.amount
+        transactions[date]['total_amount_spent'] += payment.amount
 
     for royalty_payment in royalty_payments:
         date = royalty_payment.payment_date
         if date not in transactions:
-            transactions[date] = {'fisherman': [], 'royalty': [], 'miscellaneous': [], 'total_amount': 0}
+            transactions[date] = {
+                'fisherman': [],
+                'royalty': [],
+                'miscellaneous': [],
+                'total_amount_spent': 0,
+                'total_amount_received': 0
+            }
         transactions[date]['royalty'].append(royalty_payment)
-        transactions[date]['total_amount'] += royalty_payment.amount
+        transactions[date]['total_amount_received'] += royalty_payment.amount
 
     for expense in miscellaneous_expenses:
         date = expense.date_spent
         if date not in transactions:
-            transactions[date] = {'fisherman': [], 'royalty': [], 'miscellaneous': [], 'total_amount': 0}
+            transactions[date] = {
+                'fisherman': [],
+                'royalty': [],
+                'miscellaneous': [],
+                'total_amount_spent': 0,
+                'total_amount_received': 0
+            }
         transactions[date]['miscellaneous'].append(expense)
-        transactions[date]['total_amount'] += expense.amount
-
-    # Calculate totals for each payment type by date
-    for date, types in transactions.items():
-        types['total_fisherman'] = calculate_total(payment.amount for payment in types['fisherman'])
-        types['total_royalty'] = calculate_total(royalty.amount for royalty in types['royalty'])
-        types['total_miscellaneous'] = calculate_total(expense.amount for expense in types['miscellaneous'])
+        transactions[date]['total_amount_spent'] += expense.amount
 
     # Sort transactions by date
     sorted_transactions = dict(sorted(transactions.items(), reverse=True))
@@ -491,11 +506,13 @@ def master_transaction_view(request):
     # Calculate total for the last 7 days
     today = timezone.now().date()
     last_week_start = today - timedelta(days=7)
-    total_last_7_days = 0
-
+    
     for date, types in sorted_transactions.items():
         if date >= last_week_start:
-            total_last_7_days += types['total_amount']
+            total_last_7_days_received += types['total_amount_received']
+            total_last_7_days_spent += types['total_amount_spent']
+
+    total_last_7_days = total_last_7_days_received - total_last_7_days_spent
 
     context = {
         'transactions': sorted_transactions,
@@ -503,3 +520,69 @@ def master_transaction_view(request):
     }
     
     return render(request, 'master_transaction.html', context)
+
+
+
+def add_fisherman(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        phone_number = request.POST.get('phone_number')
+        if name and phone_number:
+            Fisherman.objects.create(name=name, phone_number=phone_number)
+            messages.success(request, 'Fisherman added successfully.')
+            return redirect('add_fisherman')
+        else:
+            messages.error(request, 'Please fill out all fields.')
+
+    return render(request, 'add_fisherman.html')
+
+# Add Royalty Fisherman View
+def add_royalty_fisherman(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        phone_number = request.POST.get('phone_number')
+        if name and phone_number:
+            RoyaltyFisherman.objects.create(name=name, phone_number=phone_number)
+            messages.success(request, 'Royalty fisherman added successfully.')
+            return redirect('add_royalty_fisherman')
+        else:
+            messages.error(request, 'Please fill out all fields.')
+
+    return render(request, 'add_royalty_fisherman.html')
+
+# Edit Fish Prices View
+def edit_fish_prices(request):
+    fishes = Fish.objects.all()
+    if request.method == 'POST':
+        fish_id = request.POST.get('fish_id')
+        fish_name = request.POST.get('fish_name')
+        price = request.POST.get('price')
+        royalty_amount = request.POST.get('royalty_amount')
+        
+        # Update fish price
+        if fish_id:
+            fish = get_object_or_404(Fish, id=fish_id)
+            fish.price = price
+            fish.royalty_amount = royalty_amount
+            fish.save()
+            messages.success(request, f'{fish_name} updated successfully.')
+        
+        # Add new fish
+        elif fish_name and price:
+            Fish.objects.create(name=fish_name, price=price, royalty_amount=royalty_amount or 0)
+            messages.success(request, f'New fish {fish_name} added successfully.')
+        else:
+            messages.error(request, 'Please fill out all required fields.')
+
+        return redirect('edit_fish_prices')
+
+    return render(request, 'edit_fish_prices.html', {'fishes': fishes})
+
+# Delete Fish View
+def delete_fish(request, fish_id):
+    fish = get_object_or_404(Fish, id=fish_id)
+    fish_name = fish.name
+    fish.delete()
+    messages.success(request, f'{fish_name} deleted successfully.')
+    return redirect('edit_fish_prices')
+

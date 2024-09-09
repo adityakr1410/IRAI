@@ -18,5 +18,8 @@ urlpatterns = [
     path('add-money/', add_money_to_manager, name='add_money'),
     path('add-expense/', add_miscellaneous_expense, name='add_miscellaneous_expense'),
     path('transactions/', master_transaction_view, name='master_transaction'),
-    
+    path('add-fisherman/', add_fisherman, name='add_fisherman'),
+    path('add-royalty-fisherman/', add_royalty_fisherman, name='add_royalty_fisherman'),
+    path('edit-fish-prices/', edit_fish_prices, name='edit_fish_prices'),
+    path('delete-fish/<int:fish_id>/', delete_fish, name='delete_fish'),
 ]

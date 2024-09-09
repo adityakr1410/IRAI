@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Fish Prices{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Edit Fish Prices</h2>
+    <form method="POST" class="mt-3">
+        {% csrf_token %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Royalty Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fish in fishes %}
+                <tr>
+                    <td>{{ fish.name }}</td>
+                    <td>
+                        <input type="number" class="form-control" name="price" value="{{ fish.price }}" required>
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" name="royalty_amount" value="{{ fish.royalty_amount }}" required>
+                    </td>
+                    <td>
+                        <button type="submit" name="fish_id" value="{{ fish.id }}" class="btn btn-primary">Update</button>
+                        <a href="{% url 'delete_fish' fish.id %}" class="btn btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No fish available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <hr>
+        <h4>Add New Fish</h4>
+        <div class="form-group">
+            <label for="fish_name">Fish Name:</label>
+            <input type="text" class="form-control" id="fish_name" name="fish_name" required>
+        </div>
+        <div class="form-group">
+            <label for="price">Price:</label>
+            <input type="number" class="form-control" id="price" name="price" required>
+        </div>
+        <div class="form-group">
+            <label for="royalty_amount">Royalty Amount:</label>
+            <input type="number" class="form-control" id="royalty_amount" name="royalty_amount">
+        </div>
+        <button type="submit" class="btn btn-success">Add Fish</button>
+    </form>
+</div>
+{% endblock %}
