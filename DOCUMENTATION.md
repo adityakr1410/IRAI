@@ -161,4 +161,41 @@ IRAI is a Django-based business management system designed to streamline the ope
 
 ---
 
+## 8. Project Structure
+
+The project is organized as follows:
+
+```
+IRAI/
+├── iraiEnv/                      # Python virtual environment directory (not part of source code)
+├── mySite/                       # Main Django project directory
+│   ├── mySite/                   # Django project settings and configuration
+│   │   ├── __init__.py
+│   │   ├── asgi.py
+│   │   ├── settings.py           # Project settings
+│   │   ├── urls.py               # Project-level URL routing
+│   │   └── wsgi.py
+│   ├── myApp/                    # Main application directory
+│   │   ├── migrations/           # Database migrations
+│   │   ├── static/               # Static files (CSS, JS)
+│   │   ├── templates/            # HTML templates for views
+│   │   ├── __init__.py
+│   │   ├── admin.py              # Admin site configuration
+│   │   ├── apps.py               # App configuration
+│   │   ├── models.py             # Data models
+│   │   ├── tests.py              # Test cases
+│   │   ├── urls.py               # App-level URL routing
+│   │   └── views.py              # View functions and business logic
+│   ├── db.sqlite3                # SQLite database file
+│   ├── manage.py                 # Django management script
+│   └── requirements.txt          # Python dependencies
+└── DOCUMENTATION.md              # Project documentation
+```
+
+This structure follows standard Django project conventions, with the main app `myApp` containing the core business logic, models, views, and templates.
+
+---
+
 This documentation provides a detailed overview and guide to the IRAI Fishery Business Management System. For further assistance, refer to the source code and Django documentation.
+The project is organized as follows:
+
