@@ -116,3 +116,23 @@ This README provides a high-level overview. For advanced usage, deployment, and 
 ---
 
 ## 🐠 Happy fishing with IRAI!
+
+## Screenshots
+### Dashboard
+![dashboard](https://github.com/user-attachments/assets/a7d6b8d7-6278-4767-b82f-60b305cfce31)
+### Payment summary
+![payment summary](https://github.com/user-attachments/assets/d3eac852-db0f-4ca0-a9a4-76db53577d5b)
+### Log catches
+![log catch](https://github.com/user-attachments/assets/80b4e740-0e46-461c-b44c-ceb12cd990a6)
+### Unpaid catches
+![unpaid catches for](https://github.com/user-attachments/assets/aef9973a-da3b-40de-bb8d-2a3700894407)
+### Fisherman royality payment
+![fisherman royality payment](https://github.com/user-attachments/assets/dd574d7e-658f-4ea5-802b-238bcc0b1c8f)
+### Edit fish
+![edit fish](https://github.com/user-attachments/assets/51a9acad-d6a6-47da-a69f-d066acaf6d24)
+### Available advance
+![available advance](https://github.com/user-attachments/assets/0eb0d511-3364-4cc8-9f8c-26e029a6909a)
+### Manager transaction
+![manager transaction](https://github.com/user-attachments/assets/2f5e8c37-3d40-44cb-88c0-3f447af5619c)
+### Master transaction
+![master transaction](https://github.com/user-attachments/assets/8290c713-df09-469d-bd84-7cd807c3efe4)
